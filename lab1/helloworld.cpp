@@ -33,6 +33,32 @@
 
 using namespace std;
 
+enum MessageType {
+    News, Question, Answer, Invite, Comment, 
+}; 
+
+struct Povidom
+{
+    string povidom;
+    string avtor;
+    string adresat;
+    int spam;
+    long timestamp;
+    MessageType message_type;
+};
+
+struct Server
+{
+    /* data */
+};
+
+struct User
+{
+    /* data */
+};
+
+
+
 int main()
 {
     
