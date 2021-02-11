@@ -21,6 +21,7 @@
 // 5.  Пошук за заданими критеріями;
 // 6.  Модифікація елементів (додаткові бали);
 // 7.  Видалення елементів (додаткові бали).
+
 // Для зберігання елементів треба реалізувати наступні механізми:
 // 1.  Зберігання в пам’яті, без збереження на диск (можна використати довільну структуру даних, зокрема бібліотечні структури на зразок std::vector);
 // 2.  Зберігання у вигляді текстового файлу;
@@ -30,6 +31,7 @@
 // унікальний ID – ціле число, яке буде унікальним для кожного елементу даних.
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -57,9 +59,74 @@ struct User
     /* data */
 };
 
+class ServerPovidom
+{
+private:
+    vector <Povidom> message;
+    public:
+        ServerPovidom(/* args */);
+        ~ServerPovidom();
+
+        void add_pov(const string &povidom, const string &avtor, const string &adresat, MessageType message_type)
+        {
+            Povidom new_povidom;
+            new_povidom.povidom = povidom;
+            message.push_back(new_povidom);
+
+            Povidom new_avtor;
+            new_avtor.avtor = avtor;
+            message.push_back(new_avtor);
+
+            Povidom new_adresat;
+            new_adresat.adresat = adresat;
+            message.push_back(new_adresat);
+
+            Povidom new_message_type;
+            new_message_type.message_type = message_type;
+            message.push_back(new_message_type);
+        }
+
+        void save_pov()
+        {
+
+        }
+
+        void read_pov()
+        {
+
+        }
+
+        void show_pov()
+        {
+
+        }
+
+        void search_pov()
+        {
+
+        }
+
+        void mod_pov()
+        {
+
+        }
+
+        void del_data()
+        {
+
+        }
+};
+
+ServerPovidom::ServerPovidom(/* args */)
+{
+}
+
+ServerPovidom::~ServerPovidom()
+{
+}
 
 
 int main()
 {
-    
+    ServerPovidom s1;
 }
