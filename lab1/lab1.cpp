@@ -20,7 +20,7 @@
 // 4.  Вивід всіх збережених даних;
 // 5.  Пошук за заданими критеріями;
 // 6.  Модифікація елементів (додаткові бали);
-// 7.  Видалення елементів (додаткові бали).
+// 7.  Видалення елементів (додаткові бали)
 
 // Для зберігання елементів треба реалізувати наступні механізми:
 // 1.  Зберігання в пам’яті, без збереження на диск (можна використати довільну структуру даних, зокрема бібліотечні структури на зразок std::vector);
@@ -32,6 +32,9 @@
 
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <fstream>
+#include <time.h>
 
 using namespace std;
 
@@ -45,7 +48,7 @@ struct Povidom
     string avtor;
     string adresat;
     int spam;
-    long timestamp;
+    time_t timestamp;
     MessageType message_type;
 };
 
@@ -62,59 +65,106 @@ struct User
 class ServerPovidom
 {
 private:
-    vector <Povidom> message;
-    public:
-        ServerPovidom(/* args */);
-        ~ServerPovidom();
+    vector <Povidom> messages;
 
-        void add_pov(const string &povidom, const string &avtor, const string &adresat, MessageType message_type)
+public:
+    ServerPovidom(/* args */);
+    ~ServerPovidom();
+
+    void add_pov(const string &povidom, const string &avtor, const string &adresat, MessageType message_type)
+    {
+        Povidom new_povidom;
+
+        new_povidom.povidom = povidom;
+        new_povidom.avtor = avtor;
+        new_povidom.adresat = adresat;
+        new_povidom.message_type = message_type;
+
+        messages.push_back(new_povidom);
+    }
+
+    void get_pov()
+    {
+
+    }
+
+    void show_pov()
+    {
+
+    }
+
+    void search_pov_text(string poshuk)
+    {
+        short resus = poshuk.length();
+        string obrezysh;
+        for (Povidom povidom : messages)
         {
-            Povidom new_povidom;
-            new_povidom.povidom = povidom;
-            message.push_back(new_povidom);
+            obrezysh = povidom.povidom;
+            obrezysh.resize(resus);
 
-            Povidom new_avtor;
-            new_avtor.avtor = avtor;
-            message.push_back(new_avtor);
-
-            Povidom new_adresat;
-            new_adresat.adresat = adresat;
-            message.push_back(new_adresat);
-
-            Povidom new_message_type;
-            new_message_type.message_type = message_type;
-            message.push_back(new_message_type);
+            if (poshuk == obrezysh)
+            {
+                cout << povidom.povidom << endl;
+            }
         }
+    }
 
-        void save_pov()
+    void search_pov_ocin(int spam)
+    {
+        for (Povidom povidom : messages)
         {
-
+            if (spam == povidom.spam)
+            {
+                cout << povidom.povidom << endl;
+            }
+            
         }
+        
+    }
 
-        void read_pov()
+    void search_pov_avtor_chas(string avtor, const char* date, short h1, short m1, short s1, short h2, short m2, short s2)
+    {
+        tm da;   
+        strptime(date, "%F", &da);
+        time_t d = mktime(&da);
+
+        Povidom povidom;
+
+        cout << da.tm_year << endl;
+        cout << "d = " << d << endl;
+        cout << avtor << " " << povidom.avtor;
+
+        time_t chas1 = d + h1 * 3600 + m1 * 60 + s1;
+        time_t chas2 = d + h2 * 3600 + m2 * 60 + s2;
+
+        for (Povidom povidom : messages)
         {
-
+            if (avtor == povidom.avtor && (povidom.timestamp <= chas2 && povidom.timestamp >= chas2))
+            {
+                cout << povidom.povidom << endl;
+            }
         }
+        
+    }
 
-        void show_pov()
+    void mod_pov()
+    {
+
+    }
+
+    void del_pov()
+    {
+
+    }
+
+    void dump()
+    {
+        for (Povidom povidom : messages)
         {
-
+            cout << /*povidom.povidom << " (" << povidom.avtor << ", " << povidom.adresat << ", " << povidom.message_type << ", " << */povidom.timestamp << ")" << endl;
         }
-
-        void search_pov()
-        {
-
-        }
-
-        void mod_pov()
-        {
-
-        }
-
-        void del_data()
-        {
-
-        }
+        
+    }
 };
 
 ServerPovidom::ServerPovidom(/* args */)
@@ -129,4 +179,5 @@ ServerPovidom::~ServerPovidom()
 int main()
 {
     ServerPovidom s1;
+
 }
