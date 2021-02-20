@@ -1,0 +1,41 @@
+# Демонстраційний файл
+mode
+mode bin
+mode
+; Це буде ім'я автора
+login andrii
+send answer sheva QQQ WWW EEE RRR!!!!
+# Покажемо нове повідомлення
+show
+send question tima FD ede e q dqwd q ewqdewd dqwd we deqwdwqef rwre?
+# Всі повідомлення
+#dump
+login neo
+send news avakov Chort!
+send news avakov Chort!!
+send news avakov Chort!!!
+send news avakov Chort!!!!
+send news avakov Chort!!!!!
+send news avakov Chort!!!!!!
+search_pov Chort
+# Покажемо перше, та четверте знайдене повідомлення
+show _ ____
+search_ocin question 0
+# Покажемо всі знайдени повідомлення
+show
+# Спочатку кінець, щоб не було попредження про невірний діапазон
+to 2022-01-01T10:10:10
+from 2020-01-01T10:10:10
+search_chas andrii
+show
+delete _
+search_chas andrii
+show
+edit _
+update spam 9.999
+update type comment
+update message Lorem ipsum
+# Завершуємо режим редагування
+edit
+show
+#  quit
