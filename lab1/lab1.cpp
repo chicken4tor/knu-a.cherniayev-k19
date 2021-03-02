@@ -9,9 +9,9 @@
 //   оцінка повідомлення від системи боротьби зі спамом (дійсне невід’ємне число, чим ближче до 0 – тим менше шансів, що це спам).
 
 // Критерії пошуку:
-//  повідомлення, що починаються із заданого фрагменту тексту;
-//  повідомлення заданого типу з оцінкою не менше заданої;
-//  повідомлення від заданого автора, надіслані в заданому діапазоні часу.
+//   повідомлення, що починаються із заданого фрагменту тексту;
+//   повідомлення заданого типу з оцінкою не менше заданої;
+//   повідомлення від заданого автора, надіслані в заданому діапазоні часу.
 
 // Необхідно реалізувати підтримку наступних операцій:
 // 1.  Додавання елементів;
@@ -47,6 +47,8 @@
 #include <chrono>
 #include <algorithm>
 #include <sstream>
+#include <random>
+#include <sys/stat.h>
 
 
 using namespace std;
@@ -374,6 +376,8 @@ public:
     {
         ifstream db(DATA_TEXT);
 
+        messages.clear();
+
         db >> new_id;
         db >> ws;  // Дочитаємо перший рядок до кінця
 
@@ -419,6 +423,8 @@ public:
     bool load_bin()
     {
         ifstream db(DATA_BINARY);
+
+        messages.clear();
 
         db.read(reinterpret_cast<char *>(&new_id), sizeof(new_id));
 
@@ -958,6 +964,21 @@ public:
         }
         else if (verb == "benchmark")
         {
+            long n{};
+
+            if (args.size() == 1)
+            {
+                n = strtol(args[0].c_str(), nullptr, 10);
+            }
+
+            if (n != 0)
+            {
+                benchmark(n);
+            }
+            else
+            {
+                cout << "Потрібно вказаті початкову кількість елементів" << endl;
+            }
         }
         else if (verb == "quit")
         {
@@ -991,6 +1012,167 @@ public:
         }
 
         return true;
+    }
+
+    void benchmark_txt(long iterations, long n, string *povidom, string *adresat)
+    {
+        ServerPovidom tst;
+        vector<povidom_id> search_res;
+
+        for (long i = 0; i < iterations; ++i)
+        {
+            tst.add_pov(povidom[i % n], "benchmark", adresat[i % n], News);
+        }
+
+        tst.save_txt();
+
+        tst.load_txt();
+
+        tst.search_pov_text("some text", search_res);
+    }
+
+    void benchmark_bin(long iterations, long n, string *povidom, string *adresat)
+    {
+        ServerPovidom tst;
+        vector<povidom_id> search_res;
+
+        for (long i = 0; i < iterations; ++i)
+        {
+            tst.add_pov(povidom[i % n], "benchmark", adresat[i % n], News);
+        }
+
+        tst.save_bin();
+
+        tst.load_bin();
+
+        tst.search_pov_text("some text", search_res);
+    }
+
+    void benchmark(long n)
+    {
+        // Benchmark
+        typedef chrono::steady_clock::duration benchmark_tick;
+        const benchmark_tick BENCHMARK_LIMIT(chrono::seconds(10));
+        const benchmark_tick BENCHMARK_GEOM_STOP(BENCHMARK_LIMIT/10);  // Переходимо на аріфметичну прогресію
+
+        ofstream benchmark_results("benchmark.txt");
+
+        benchmark_results << "Iterations" << FIELD_DELIM << "Duration" << FIELD_DELIM << "Mode" << FIELD_DELIM << "Size" << '\n';
+
+        // Генеруємо випадкові данні
+        default_random_engine reng;
+
+        const char alphabet[] = "0123456789QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!+;:)(_";
+
+        string adresat[n];
+        string povidom[n];
+
+        // Випадкова довжина ніку адресату
+        uniform_int_distribution<string::size_type> adresat_len(6, 15);
+        // Довжина слів
+        uniform_int_distribution<string::size_type> word_len(1, 18);
+        // Кількість слів у повідомленні
+        uniform_int_distribution<string::size_type> povidom_len(3, 80);
+        // Випадкові літери із абетки
+        uniform_int_distribution<size_t> litera(0, sizeof(alphabet) - 2);
+
+        for (int i = 0; i < n; ++i)
+        {
+            string::size_type len{};
+            string ad;
+            stringstream pov;
+
+            len = adresat_len(reng);
+
+            ad.reserve(len);
+
+            for (int j = 0; j < len; ++j)
+            {
+                ad += alphabet[litera(reng)];
+            }
+
+            len = povidom_len(reng);
+
+            for (int j = 0; j < len; ++j)
+            {
+                string::size_type w_len = word_len(reng);
+
+                for (int k = 0; k < w_len; ++k)
+                {
+                    pov << alphabet[litera(reng)];
+                }
+
+                if (j != len - 1)
+                {
+                    // Розділяємо
+                    pov << ' ';
+                }
+            }
+
+            adresat[i] = ad;
+            povidom[i] = pov.str();
+        }
+
+        struct BenchmarkInfo
+        {
+            void (ServerDemo::*mem_fun)(long, long, string *, string *);
+            string mode_label;
+            string data_file;
+        };
+
+        BenchmarkInfo benchmarks[] = {
+            {&ServerDemo::benchmark_txt, "txt", DATA_TEXT},
+            {&ServerDemo::benchmark_bin, "bin", DATA_BINARY},
+        };
+
+        for (BenchmarkInfo &bi : benchmarks)
+        {
+            // 1/10th
+            long long arithmetic = 0;
+            // 
+            long long iterations = n;
+
+            while (true)
+            {
+                auto bench_start = std::chrono::steady_clock::now();
+
+                (this->*bi.mem_fun)(iterations, n, povidom, adresat);
+
+                auto bench_end = std::chrono::steady_clock::now();
+
+                auto delta = bench_end - bench_start;
+
+                struct stat file_info;
+                stat(bi.data_file.c_str(), &file_info);
+
+                benchmark_results << iterations << FIELD_DELIM << chrono::duration_cast<chrono::milliseconds>(delta).count() << FIELD_DELIM << bi.mode_label << FIELD_DELIM << file_info.st_size << '\n';
+
+                if (arithmetic == 0)
+                {
+                    if (delta < BENCHMARK_GEOM_STOP)
+                    {
+                        iterations *= 2;
+                    }
+                    else
+                    {
+                        // Відкалібруємо, щоб кількість єлементів була ближче до 1/10 від максимального
+                        double coeff = static_cast<double>(BENCHMARK_GEOM_STOP.count()) / static_cast<double>(delta.count());
+                        arithmetic = iterations * coeff;
+
+                        iterations = 2 * arithmetic;
+                    }
+                }
+                else
+                {
+                    iterations += arithmetic;
+                }
+
+                if (delta >= BENCHMARK_LIMIT)
+                {
+                    break;
+                }
+            }
+        }
     }
 
     const string &custom_prompt()

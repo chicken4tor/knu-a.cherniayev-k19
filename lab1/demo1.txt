@@ -3,11 +3,11 @@ mode
 mode bin
 mode
 ; Це буде ім'я автора
-login andrii
-send answer sheva QQQ WWW EEE RRR!!!!
+login bender
+send answer sheva Kill all humans!!!
 # Покажемо нове повідомлення
 show
-send question tima FD ede e q dqwd q ewqdewd dqwd we deqwdwqef rwre?
+send question tima Bite my shiny metal ass!!!
 # Всі повідомлення
 #dump
 login neo
@@ -26,10 +26,10 @@ show
 # Спочатку кінець, щоб не було попредження про невірний діапазон
 to 2022-01-01T10:10:10
 from 2020-01-01T10:10:10
-search_chas andrii
+search_chas bender
 show
 delete _
-search_chas andrii
+search_chas bender
 show
 edit _
 update spam 9.999
