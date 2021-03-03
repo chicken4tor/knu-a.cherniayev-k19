@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 
 
 using namespace std;
@@ -82,6 +83,7 @@ public:
         else
         {
             // Помилка
+            throw out_of_range("Вже не лізе");
         }
     }
 
@@ -103,6 +105,7 @@ public:
         else
         {
             // Помилка
+            throw out_of_range("Вставляємо не туди");
         }
     }
 
@@ -119,6 +122,7 @@ public:
         else
         {
             // Помилка
+            throw out_of_range("Видаляемо не те");
         }
     }
 
@@ -131,6 +135,7 @@ public:
         else
         {
             // Помилка
+            throw out_of_range("Ліземо не туди");
         }
     }
 
@@ -143,6 +148,7 @@ public:
         else
         {
             // Помилка
+            throw out_of_range("Ліземо не туди");
         }
     }
 
@@ -223,6 +229,38 @@ int main()
     const Date &d = p->get(0);
 
     cout << d.year << endl;
+
+    // Фатальна помилка
+
+    try
+    {
+        p->get(10);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    try
+    {
+        p->get(-1);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+    try
+    {
+        while (true)
+        {
+            p->append(a);
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 
     delete p;
 
