@@ -26,6 +26,7 @@
 //    версій структур даних.
 
 
+#include <iostream>
 #include <vector>
 
 
@@ -34,9 +35,9 @@ using namespace std;
 
 struct Date
 {
-    int year{};
-    short month{};
     short day{};
+    short month{};
+    int year{};
 };
 
 
@@ -61,18 +62,105 @@ class FixedDateList : public IDateList
 {
 public:
 
-    static FixedDateList *create_empty(size_t max_szie)
+    ~FixedDateList()
     {
-        return nullptr;
+        delete[] date_store;
+    }
+
+    static FixedDateList *create_empty(size_t max_size)
+    {
+        return new FixedDateList(max_size);
+    }
+
+    void append(const Date &value)
+    {
+        if (tail_element < total_count)
+        {
+            date_store[tail_element] = value;
+            ++tail_element;
+        }
+        else
+        {
+            // Помилка
+        }
+    }
+
+    void insert(size_t k, const Date &value)
+    {
+        if (tail_element < total_count)
+        {
+            if (k < tail_element)
+            {
+                // Вставляємо десь по середині, звільнюємо місце для нового елементу
+                for (size_t i = tail_element; i > k; --i)
+                {
+                    date_store[i] = move(date_store[i - 1]);
+                }
+            }
+            date_store[k] = value;
+            ++tail_element;
+        }
+        else
+        {
+            // Помилка
+        }
+    }
+
+    void remove(size_t k)
+    {
+        if (k < tail_element)
+        {
+            --tail_element;  // Зменшуємо, щоб можна було використовувати (i + 1)
+            for (size_t i = k; i < tail_element; ++i)
+            {
+                date_store[i] = move(date_store[i + 1]);
+            }
+        }
+        else
+        {
+            // Помилка
+        }
+    }
+
+    const Date &get(size_t k)
+    {
+        if (k < tail_element)
+        {
+            return date_store[k];
+        }
+        else
+        {
+            // Помилка
+        }
+    }
+
+    void set(size_t k, const Date &value)
+    {
+        if (k < tail_element)
+        {
+            date_store[k] = value;
+        }
+        else
+        {
+            // Помилка
+        }
+    }
+
+    size_t length()
+    {
+        return tail_element;
     }
 
 private:
 
     Date *date_store;
-    size_t last_element;
+    size_t total_count;
+    size_t tail_element{};
 
-    FixedDateList()
-    {}
+    FixedDateList(size_t max_size) : total_count(max_size)
+    {
+        date_store = new Date[max_size];
+    }
 };
 
 class ArrayDateList : public IDateList
@@ -107,7 +195,36 @@ private:
 
 int main()
 {
-    IDateList *p = FixedDateList::create_empty(100);
+    IDateList *p{};
+
+    p = FixedDateList::create_empty(100);
+    // p = ArrayDateList::create_empty();
+    // p = DateList::create_empty();
+
+    Date a = {7, 7, 777};
+    Date b = {9, 3, 2021};
+
+    p->append(a);
+
+    cout << p->length() << endl;
+
+    p->append(b);
+
+    cout << p->length() << endl;
+
+    const Date &c = p->get(0);
+
+    cout << c.year << endl;
+
+    p->remove(0);
+
+    cout << p->length() << endl;
+
+    const Date &d = p->get(0);
+
+    cout << d.year << endl;
+
+    delete p;
 
     return 0;
 }
