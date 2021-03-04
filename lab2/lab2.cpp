@@ -280,30 +280,13 @@ public:
         }
         else
         {
-            Node *prev_node{};
-            Node *node = head;
+            Node *node = get_previous_k(k);
 
-            size_t pos = 0;
-
-            for (; pos < k; ++pos)
-            {
-                if (node != nullptr)
-                {
-                    prev_node = node;
-                    node = node->next;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            // Якщо досягнуте k
-            if (pos == k)
+            if (node != nullptr)
             {
                 // Вставляємо в проміжок
-                prev_node->next = p;
                 p->next = node;
+                node->next = p;
             }
             else
             {
@@ -327,34 +310,20 @@ public:
         }
         else
         {
-            Node *prev_node{};
-            Node *node = head;
+            Node *prev_node = get_previous_k(k);
 
-            size_t pos = 0;
-
-            for (; pos < k; ++pos)
+            if (prev_node != nullptr && prev_node->next != nullptr)
             {
-                if (node != nullptr)
-                {
-                    prev_node = node;
-                    node = node->next;
-                }
-                else
-                {
-                    break;
-                }
-            }
+                // Зберігаємо, для подальшого видалення з пам'яти
+                node = prev_node->next;
 
-            // Якщо досягнуте k
-            if (pos == k)
-            {
                 // Видаляємо з проміжку
-                prev_node->next = node->next;
+                prev_node->next = prev_node->next->next;
             }
             else
             {
                 // Помилка
-                throw out_of_range("Вставляємо не туди");
+                throw out_of_range("Видаляємо не те");
             }
         }
 
@@ -363,10 +332,50 @@ public:
 
     const Date &get(size_t k)
     {
+        Node *node{};
+
+        if (k == 0)
+        {
+            node = head;
+        }
+        else
+        {
+            node = get_k(k);
+        }
+
+        if (node != nullptr)
+        {
+            return node->date;
+        }
+        else
+        {
+            // Помилка
+            throw out_of_range("Ліземо не туди");
+        }
     }
 
     void set(size_t k, const Date &value)
     {
+        Node *node{};
+
+        if (k == 0)
+        {
+            node = head;
+        }
+        else
+        {
+            node = get_k(k);
+        }
+
+        if (node != nullptr)
+        {
+            node->date = move(value);
+        }
+        else
+        {
+            // Помилка
+            throw out_of_range("Ліземо не туди");
+        }
     }
 
     size_t length()
@@ -402,9 +411,48 @@ private:
     DateList()
     {}
 
+    // Цей метод визивається для k >= 1
     Node *get_previous_k(size_t k)
     {
-        ;
+        Node *prev_node{};
+        Node *node = head;
+
+        size_t pos = 0;
+
+        for (; pos < k; ++pos)
+        {
+            if (node != nullptr)
+            {
+                prev_node = node;
+                node = node->next;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        // Якщо досягнуте k
+        if (pos == k)
+        {
+            return prev_node;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    Node *get_k(size_t k)
+    {
+        Node *node = get_previous_k(k);
+
+        if (node != nullptr)
+        {
+            return node->next;
+        }
+
+        return nullptr;
     }
 };
 
@@ -463,7 +511,7 @@ int main()
 
     try
     {
-        while (true)
+        // while (true)
         {
             p->append(a);
         }
