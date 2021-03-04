@@ -178,7 +178,37 @@ public:
 
     static ArrayDateList *create_empty()
     {
-        return nullptr;
+        return new ArrayDateList;
+    }
+
+    void append(const Date &value)
+    {
+        date_store.push_back(value);
+    }
+
+    void insert(size_t k, const Date &value)
+    {
+        date_store.insert(begin(date_store) + k, value);
+    }
+
+    void remove(size_t k)
+    {
+        date_store.erase(begin(date_store) + k);
+    }
+
+    const Date &get(size_t k)
+    {
+        return date_store.at(k);
+    }
+
+    void set(size_t k, const Date &value)
+    {
+        date_store.at(k) = move(value);
+    }
+
+    size_t length()
+    {
+        return date_store.size();
     }
 
 private:
@@ -211,8 +241,8 @@ int main()
 {
     IDateList *p{};
 
-    p = FixedDateList::create_empty(100);
-    // p = ArrayDateList::create_empty();
+    // p = FixedDateList::create_empty(100);
+    p = ArrayDateList::create_empty();
     // p = DateList::create_empty();
 
     Date a = {7, 7, 777};
