@@ -456,14 +456,8 @@ private:
     }
 };
 
-int main()
+void test_list(IDateList *p)
 {
-    IDateList *p{};
-
-    // p = FixedDateList::create_empty(100);
-    // p = ArrayDateList::create_empty();
-    p = DateList::create_empty();
-
     Date a = {7, 7, 777};
     Date b = {9, 3, 2021};
 
@@ -489,7 +483,7 @@ int main()
 
     cout << d.year << endl;
 
-    // Фатальна помилка
+    // Фатальні помилки
 
     try
     {
@@ -511,7 +505,8 @@ int main()
 
     try
     {
-        // while (true)
+        // Нескінченне додавання дуже повільно у DateList
+        for (int i = 0; i < 1000; ++i)
         {
             p->append(a);
         }
@@ -520,7 +515,22 @@ int main()
     {
         std::cerr << e.what() << '\n';
     }
+}
 
+int main()
+{
+    IDateList *p{};
+
+    p = FixedDateList::create_empty(100);
+    test_list(p);
+    delete p;
+
+    p = ArrayDateList::create_empty();
+    test_list(p);
+    delete p;
+
+    p = DateList::create_empty();
+    test_list(p);
     delete p;
 
     return 0;
