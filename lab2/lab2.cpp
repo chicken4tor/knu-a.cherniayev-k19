@@ -57,6 +57,9 @@ public:
     virtual void set(size_t k, const Date &value) = 0;
     // довжина списку
     virtual size_t length() = 0;
+
+    virtual ~IDateList()
+    {}
 };
 
 class FixedDateList : public IDateList
@@ -182,12 +185,16 @@ private:
 
     vector<Date> date_store;
 
-    ArrayDateList();
+    ArrayDateList()
+    {}
 };
 
 class DateList : public IDateList
 {
 public:
+
+    ~DateList()
+    {}
 
     static DateList *create_empty()
     {
@@ -196,7 +203,8 @@ public:
 
 private:
 
-    DateList();
+    DateList()
+    {}
 };
 
 int main()
