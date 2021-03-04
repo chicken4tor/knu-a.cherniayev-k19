@@ -125,7 +125,7 @@ public:
         else
         {
             // Помилка
-            throw out_of_range("Видаляемо не те");
+            throw out_of_range("Видаляємо не те");
         }
     }
 
@@ -224,17 +224,188 @@ class DateList : public IDateList
 public:
 
     ~DateList()
-    {}
+    {
+        Node *node = head;
+        Node *prev_node{};
+
+        // Добіваєм виживших
+        while (node != nullptr)
+        {
+            prev_node = node;
+            node = node->next;
+
+            delete prev_node;
+        }
+    }
 
     static DateList *create_empty()
     {
-        return nullptr;
+        return new DateList;
+    }
+
+    void append(const Date &value)
+    {
+        Node *p = new Node;
+        p->date = value;
+
+        if (head == nullptr)
+        {
+            // Ти мій перший
+            head = p;
+        }
+        else
+        {
+            Node *node = head;
+
+            // Йдемо до останнього
+            while (node->next != nullptr)
+            {
+                node = node->next;
+            }
+
+            node->next = p;
+        }
+    }
+
+    void insert(size_t k, const Date &value)
+    {
+        Node *p = new Node;
+        p->date = value;
+
+        if (k == 0)
+        {
+            // Вставимо в голову
+            p->next = head;
+            head = p;
+        }
+        else
+        {
+            Node *prev_node{};
+            Node *node = head;
+
+            size_t pos = 0;
+
+            for (; pos < k; ++pos)
+            {
+                if (node != nullptr)
+                {
+                    prev_node = node;
+                    node = node->next;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // Якщо досягнуте k
+            if (pos == k)
+            {
+                // Вставляємо в проміжок
+                prev_node->next = p;
+                p->next = node;
+            }
+            else
+            {
+                delete p;
+
+                // Помилка
+                throw out_of_range("Вставляємо не туди");
+            }
+        }
+    }
+
+    void remove(size_t k)
+    {
+        Node *node{};
+
+        if (k == 0)
+        {
+            // Уберемо із голови
+            node = head;
+            head = head->next;
+        }
+        else
+        {
+            Node *prev_node{};
+            Node *node = head;
+
+            size_t pos = 0;
+
+            for (; pos < k; ++pos)
+            {
+                if (node != nullptr)
+                {
+                    prev_node = node;
+                    node = node->next;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            // Якщо досягнуте k
+            if (pos == k)
+            {
+                // Видаляємо з проміжку
+                prev_node->next = node->next;
+            }
+            else
+            {
+                // Помилка
+                throw out_of_range("Вставляємо не туди");
+            }
+        }
+
+        delete node;
+    }
+
+    const Date &get(size_t k)
+    {
+    }
+
+    void set(size_t k, const Date &value)
+    {
+    }
+
+    size_t length()
+    {
+        size_t l = 0;
+
+        Node *node = head;
+
+        while (node != nullptr)
+        {
+            node = node->next;
+            ++l;
+        }
+
+        return l;
     }
 
 private:
 
+    // Обираємо однозв’язний, сподіваємось що це буде простіше.
+    // https://en.wikipedia.org/wiki/Linked_list#Singly_linked_list
+    struct Node
+    {
+        // Тут зберігаємо данні
+        Date date;
+        // Наступний елемент списку, nullptr якщо кінець
+        Node *next{};
+    };
+
+    // Це голова
+    Node *head{};
+
     DateList()
     {}
+
+    Node *get_previous_k(size_t k)
+    {
+        ;
+    }
 };
 
 int main()
@@ -242,11 +413,13 @@ int main()
     IDateList *p{};
 
     // p = FixedDateList::create_empty(100);
-    p = ArrayDateList::create_empty();
-    // p = DateList::create_empty();
+    // p = ArrayDateList::create_empty();
+    p = DateList::create_empty();
 
     Date a = {7, 7, 777};
     Date b = {9, 3, 2021};
+
+    p->insert(0, b);
 
     p->append(a);
 
