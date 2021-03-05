@@ -553,9 +553,36 @@ public:
             args.push_back(arg);
         }
 
-        if (verb == "")
+        if (verb == "create")
         {
 
+        }
+        else if (verb == "append")
+        {
+        }
+        else if (verb == "insert")
+        {
+        }
+        else if (verb == "remove")
+        {
+        }
+        else if (verb == "get")
+        {
+        }
+        else if (verb == "set")
+        {
+        }
+        else if (verb == "length")
+        {
+        }
+        else if (verb == "dump")
+        {
+        }
+        else if (verb == "demo")
+        {
+        }
+        else if (verb == "benchmark")
+        {
         }
         else if (verb == "quit")
         {
@@ -563,21 +590,14 @@ public:
         }
         else if (verb == "help")
         {
-            cout << "Считування - load\n"
-                    "Збереження - save\n"
-                    "Тип бази - mode bin або txt\n"
-                    "\"Авторизація\" - login <ім'я автора повідомлення>\n"
-                    "Відправити повідомлення - send <тип - news, question, answer, invite, comment> адресат повідомлення\n"
-                    "Пошук за початком повідомлення - search_pov <початок повідомлення>\n"
-                    "Пошук за типом та оцінкою - search_ocin <тип - news, question, answer, invite, comment> <оцінка>\n"
-                    "Пошук за автором та часом - search_chas <ім'я автора повідомлення>\n"
-                    "Початок діапазону пошуку - from <час у форматі ISO:8601>\n"
-                    "Кінець діапазону пошуку - to <час у форматі ISO:8601>\n"
-                    "Показати - show <id повідомлення>\n"
-                    "Редагування - edit <id повідомлення>\n"
-                    "Оновлення данних - update <type або spam або message> <нове значення>\n"
-                    "Видалити - delete <id повідомлення>\n"
-                    "Всі повідомлення - dump\n"
+            cout << "Акт творіння - create fixed <кількість елементів> або array або list\n"
+                    "Додати елемент - append день місяць рік\n"
+                    "Вставити елемент - insert k день місяць рік\n"
+                    "Видалити елемент - remove k\n"
+                    "Виводимо елемент - get k\n"
+                    "Обновляємо елемент - set k день місяць рік\n"
+                    "Довжина списку - length\n"
+                    "Всі елементи - dump\n"
                     "Демонстрацийний режим - demo <ім'я файла з командами>\n"
                     "Режим вимірювання ефективності - benchmark <кількість елементів>\n"
                     "Вихід - quit\n"
@@ -635,7 +655,7 @@ int main()
 
     string command;
 
-    cout << "Connected to server\n";
+    cout << "Lab 2a 1.2\n";
     cout << user_input;
 
     while (getline(cin, command))
