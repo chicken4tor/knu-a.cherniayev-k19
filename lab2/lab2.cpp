@@ -29,6 +29,7 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <sstream>
 
 
 using namespace std;
@@ -461,11 +462,11 @@ void test_list(IDateList *p)
     Date a = {7, 7, 777};
     Date b = {9, 3, 2021};
 
-    p->insert(0, b);
-
     p->append(a);
 
     cout << p->length() << endl;
+
+    p->insert(0, b);
 
     p->append(b);
 
@@ -517,21 +518,141 @@ void test_list(IDateList *p)
     }
 }
 
-int main()
+class ServerDemo
 {
+public:
+    ServerDemo(/* args */);
+    ~ServerDemo();
+
+    bool process_command(const string &command)
+    {
+        // Команда для виконання
+        string verb;
+        // Параметри команди
+        vector<string> args;
+
+        // Знаходимо команду та виділяємо аргументи
+        stringstream ss(command);
+        string arg;
+
+        // Ігноруємо початкові пробели
+        ss >> ws;
+        // Перевіряемо початок строки на '#' або ';'
+        auto first_char = ss.peek();
+        if (first_char == '#' || first_char == ';')
+        {
+            // Ця команда - коментар
+            return true;
+        }
+
+        ss >> verb;
+        args.clear();
+
+        while ((ss >> arg))
+        {
+            args.push_back(arg);
+        }
+
+        if (verb == "")
+        {
+
+        }
+        else if (verb == "quit")
+        {
+            return false;
+        }
+        else if (verb == "help")
+        {
+            cout << "Считування - load\n"
+                    "Збереження - save\n"
+                    "Тип бази - mode bin або txt\n"
+                    "\"Авторизація\" - login <ім'я автора повідомлення>\n"
+                    "Відправити повідомлення - send <тип - news, question, answer, invite, comment> адресат повідомлення\n"
+                    "Пошук за початком повідомлення - search_pov <початок повідомлення>\n"
+                    "Пошук за типом та оцінкою - search_ocin <тип - news, question, answer, invite, comment> <оцінка>\n"
+                    "Пошук за автором та часом - search_chas <ім'я автора повідомлення>\n"
+                    "Початок діапазону пошуку - from <час у форматі ISO:8601>\n"
+                    "Кінець діапазону пошуку - to <час у форматі ISO:8601>\n"
+                    "Показати - show <id повідомлення>\n"
+                    "Редагування - edit <id повідомлення>\n"
+                    "Оновлення данних - update <type або spam або message> <нове значення>\n"
+                    "Видалити - delete <id повідомлення>\n"
+                    "Всі повідомлення - dump\n"
+                    "Демонстрацийний режим - demo <ім'я файла з командами>\n"
+                    "Режим вимірювання ефективності - benchmark <кількість елементів>\n"
+                    "Вихід - quit\n"
+                    "Ця інформація - help\n";
+        }
+        else
+        {
+            cout << "Невідома команда (скористуйтеся help) " << command << endl;
+        }
+
+        return true;
+    }
+
+    const string &custom_prompt()
+    {
+        return list_type;
+    }
+
+private:
     IDateList *p{};
 
-    p = FixedDateList::create_empty(100);
-    test_list(p);
-    delete p;
+    string list_type;
+};
 
-    p = ArrayDateList::create_empty();
-    test_list(p);
-    delete p;
+ServerDemo::ServerDemo(/* args */)
+{
+}
 
-    p = DateList::create_empty();
-    test_list(p);
-    delete p;
+ServerDemo::~ServerDemo()
+{
+}
+
+
+int main()
+{
+    // IDateList *p{};
+
+    // p = FixedDateList::create_empty(5);
+    // test_list(p);
+    // delete p;
+
+    // p = ArrayDateList::create_empty();
+    // test_list(p);
+    // delete p;
+
+    // p = DateList::create_empty();
+    // test_list(p);
+    // delete p;
+
+    ServerDemo demo;
+
+    // https://askubuntu.com/questions/558280/changing-colour-of-text-and-background-of-terminal
+    const string user_input = "$ \e[31m";  // 31 - Red
+    const string reset_color = "\e[0m";
+
+    string command;
+
+    cout << "Connected to server\n";
+    cout << user_input;
+
+    while (getline(cin, command))
+    {
+        // Повертаємо колір
+        cout << reset_color;
+
+        if (!demo.process_command(command))
+        {
+            break;
+        }
+
+        cout << demo.custom_prompt() << user_input;
+    }
+
+    // Повертаємо колір
+    cout << reset_color;
 
     return 0;
 }
