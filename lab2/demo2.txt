@@ -1,5 +1,7 @@
-create fixed
-create fixed NOO!!!!
-create fixed 999999999999999
-create fixed 10
+# зробимо щось погане
+#create fixed
+#create fixed NOO!!!!
+#create fixed 999999999999999
 
+create fixed 10
+dump

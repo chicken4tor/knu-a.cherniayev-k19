@@ -31,6 +31,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 
 
 using namespace std;
@@ -518,6 +519,32 @@ void test_list(IDateList *p)
         std::cerr << e.what() << '\n';
     }
 }
+void print_list(IDateList *p)
+{
+    if (p != nullptr)
+    {
+        size_t len = p->length();
+        bool comma = false;
+
+        cout << "[";
+
+        for (size_t i = 0; i < len; ++i)
+        {
+            if (comma)
+            {
+                cout << ", ";
+            }
+
+            const Date &d = p->get(i);
+
+            cout << setfill('0') << setw(4) << d.year << "-" << setw(2) << d.month << "-" << setw(2) << d.day;
+
+            comma = true;
+        }
+
+        cout << "]\n";
+    }
+}
 
 class ServerDemo
 {
@@ -618,6 +645,14 @@ public:
         }
         else if (verb == "dump")
         {
+            if (p != nullptr)
+            {
+                print_list(p);
+            }
+            else
+            {
+                cout << "Спочатку створи" << endl;
+            }
         }
         else if (verb == "demo")
         {
