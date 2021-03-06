@@ -672,7 +672,11 @@ public:
         }
         else
         {
-            cout << "Невідома команда (скористуйтеся help) " << command << endl;
+            // Якщо нема команди - нічого не печатаємо
+            if (!verb.empty())
+            {
+                cout << "Невідома команда (скористуйтеся help) " << command << endl;
+            }
         }
 
         return true;
