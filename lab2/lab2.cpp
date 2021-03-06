@@ -30,6 +30,7 @@
 #include <vector>
 #include <stdexcept>
 #include <sstream>
+#include <fstream>
 
 
 using namespace std;
@@ -555,7 +556,47 @@ public:
 
         if (verb == "create")
         {
+            if (!args.empty())
+            {
+                if (p != nullptr)
+                {
+                    delete p;
+                    p = nullptr;
+                    list_type.clear();
+                }
 
+                if (args[0] == "fixed")
+                {
+                    try
+                    {
+                        size_t n{};
+
+                        // Якщо нема аргументу, або там не число - спіймаємо помилку
+                        n = stoul(args.at(1));
+
+                        p = FixedDateList::create_empty(n);
+                        list_type = "fixed";
+                    }
+                    catch(const std::exception& e)
+                    {
+                        std::cerr << e.what() << '\n';
+                    }
+                }
+                else if (args[0] == "array")
+                {
+                    p = ArrayDateList::create_empty();
+                    list_type = "array";
+                }
+                else if (args[0] == "list")
+                {
+                    p = ArrayDateList::create_empty();
+                    list_type = "list";
+                }
+            }
+            else
+            {
+                cout << "Потрібні аргументи" << endl;
+            }
         }
         else if (verb == "append")
         {
@@ -580,6 +621,32 @@ public:
         }
         else if (verb == "demo")
         {
+            if (args.size() == 1)
+            {
+                try
+                {
+                    ifstream scenario_to_play(args[0]);
+
+                    if (!scenario_to_play.is_open())
+                    {
+                        throw runtime_error("Ой не можу відкрити файл");
+                    }
+
+                    string demo_cmd;
+
+                    while (getline(scenario_to_play, demo_cmd))
+                    {
+                        if (!process_command(demo_cmd))
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            }
         }
         else if (verb == "benchmark")
         {
