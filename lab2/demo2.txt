@@ -3,5 +3,20 @@
 #create fixed NOO!!!!
 #create fixed 999999999999999
 
-create fixed 10
+create fixed 5
+dump
+append 1 1 1111
+append 2 2 2222
+append 3 3 3333
+append 4 4 4444
+append 5 5 5555
+append 6 6 6666
+dump
+get 2
+get 1
+set 1 7 7 7777
+dump
+remove 1
+dump
+insert 0 7 7 7777
 dump

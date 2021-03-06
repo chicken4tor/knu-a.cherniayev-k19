@@ -627,21 +627,130 @@ public:
         }
         else if (verb == "append")
         {
+            if (p != nullptr)
+            {
+                try
+                {
+                    Date d;
+
+                    d.day = stoi(args.at(0));
+                    d.month = stoi(args.at(1));
+                    d.year = stoi(args.at(2));
+
+                    p->append(d);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            }
+            else
+            {
+                cout << "Спочатку створи" << endl;
+            }
         }
         else if (verb == "insert")
         {
+            if (p != nullptr)
+            {
+                try
+                {
+                    Date d;
+
+                    size_t k = stoul(args.at(0));
+
+                    d.day = stoi(args.at(1));
+                    d.month = stoi(args.at(2));
+                    d.year = stoi(args.at(3));
+
+                    p->insert(k, d);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            }
+            else
+            {
+                cout << "Спочатку створи" << endl;
+            }
         }
         else if (verb == "remove")
         {
+            if (p != nullptr)
+            {
+                try
+                {
+                    size_t k = stoul(args.at(0));
+
+                    p->remove(k);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            }
+            else
+            {
+                cout << "Спочатку створи" << endl;
+            }
         }
         else if (verb == "get")
         {
+            if (p != nullptr)
+            {
+                try
+                {
+                    const Date &d = p->get(stoul(args.at(0)));
+
+                    cout << setfill('0') << setw(4) << d.year << "-" << setw(2) << d.month << "-" << setw(2) << d.day << endl;
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            }
+            else
+            {
+                cout << "Спочатку створи" << endl;
+            }
         }
         else if (verb == "set")
         {
+            if (p != nullptr)
+            {
+                try
+                {
+                    Date d;
+
+                    size_t k = stoul(args.at(0));
+
+                    d.day = stoi(args.at(1));
+                    d.month = stoi(args.at(2));
+                    d.year = stoi(args.at(3));
+
+                    p->set(k, d);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            }
+            else
+            {
+                cout << "Спочатку створи" << endl;
+            }
         }
         else if (verb == "length")
         {
+            if (p != nullptr)
+            {
+                cout << p->length() << endl;
+            }
+            else
+            {
+                cout << "Спочатку створи" << endl;
+            }
         }
         else if (verb == "dump")
         {
