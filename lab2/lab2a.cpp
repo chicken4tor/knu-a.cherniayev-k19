@@ -32,6 +32,7 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <chrono>
 
 
 using namespace std;
@@ -546,6 +547,70 @@ void print_list(IDateList *p)
     }
 }
 
+const size_t BENCH_RAZIV = 50000;
+typedef chrono::time_point<chrono::steady_clock> bench_time;
+
+bench_time::duration benchmark_append(IDateList *p)
+{
+    Date d = {1, 2, 3};
+
+    bench_time start = chrono::steady_clock::now();
+
+    for (size_t i = 0; i < BENCH_RAZIV; ++i)
+    {
+        p->append(d);
+    }
+
+    bench_time end = chrono::steady_clock::now();
+
+    return end - start;
+}
+
+bench_time::duration benchmark_insert(IDateList *p)
+{
+    Date d = {1, 2, 3};
+
+    bench_time start = chrono::steady_clock::now();
+
+    for (size_t i = 0; i < BENCH_RAZIV; ++i)
+    {
+        p->insert(0, d);
+    }
+
+    bench_time end = chrono::steady_clock::now();
+
+    return end - start;
+}
+
+bench_time::duration benchmark_get_set(IDateList *p)
+{
+    bench_time start = chrono::steady_clock::now();
+
+    for (size_t i = 0; i < BENCH_RAZIV; ++i)
+    {
+        Date d = p->get(i);
+        p->set(i, d);
+    }
+
+    bench_time end = chrono::steady_clock::now();
+
+    return end - start;
+}
+
+bench_time::duration benchmark_remove(IDateList *p)
+{
+    bench_time start = chrono::steady_clock::now();
+
+    for (size_t i = 0; i < BENCH_RAZIV; ++i)
+    {
+        p->remove(0);
+    }
+
+    bench_time end = chrono::steady_clock::now();
+
+    return end - start;
+}
+
 class ServerDemo
 {
 public:
@@ -794,8 +859,77 @@ public:
         }
         else if (verb == "benchmark")
         {
+            try
+            {
+                IDateList *l1{};
+
+                cout << "Пристебніться, взлітаємо" << endl;
+
+                // Результати - 3 типа по 4 теста
+                bench_time::duration results[3][4]{};
+
+                // FixedDateList
+                l1 = FixedDateList::create_empty(BENCH_RAZIV);
+                results[0][0] = benchmark_append(l1);
+                delete l1;
+
+                l1 = FixedDateList::create_empty(BENCH_RAZIV);
+                results[0][1] = benchmark_insert(l1);
+                results[0][2] = benchmark_get_set(l1);
+                results[0][3] = benchmark_remove(l1);
+                delete l1;
+
+                cout << "... fixed" << endl;
+
+                // ArrayDateList
+                l1 = ArrayDateList::create_empty();
+                results[1][0] = benchmark_append(l1);
+                delete l1;
+
+                l1 = ArrayDateList::create_empty();
+                results[1][1] = benchmark_insert(l1);
+                results[1][2] = benchmark_get_set(l1);
+                results[1][3] = benchmark_remove(l1);
+                delete l1;
+
+                cout << ".. array" << endl;
+
+                l1 = ArrayDateList::create_empty();
+
+                // DateList
+                l1 = DateList::create_empty();
+                results[2][0] = benchmark_append(l1);
+                delete l1;
+
+                l1 = DateList::create_empty();
+                results[2][1] = benchmark_insert(l1);
+                results[2][2] = benchmark_get_set(l1);
+                results[2][3] = benchmark_remove(l1);
+                delete l1;
+
+                cout << ". list" << endl;
+
+                const char *impl_label[] = {"FixedDateList", "ArrayDateList", "DateList"};
+
+                cout << "Results in milliseconds " << BENCH_RAZIV << " elements(iterations)" << "\n              |  append  |  insert  |  get/set |  remove\n";
+
+                for (int i = 0; i < 3; ++i)
+                {
+                    cout << left << setw(14) << impl_label[i] << "|";
+                    for (int j = 0; j < 4; ++j)
+                    {
+                        chrono::duration<double, milli> fp_ms = results[i][j];
+                        cout << fixed << setw(10) << right << setprecision(4) << fp_ms.count() << "|";
+                    }
+                    cout << "\n";
+                }
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+            }
         }
-        else if (verb == "quit")
+        else if (verb == "quit" || verb == "die")
         {
             return false;
         }
@@ -810,7 +944,7 @@ public:
                     "Довжина списку - length\n"
                     "Всі елементи - dump\n"
                     "Демонстрацийний режим - demo <ім'я файла з командами>\n"
-                    "Режим вимірювання ефективності - benchmark <кількість елементів>\n"
+                    "Режим вимірювання ефективності - benchmark\n"
                     "Вихід - quit\n"
                     "Ця інформація - help\n";
         }
