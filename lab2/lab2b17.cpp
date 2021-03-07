@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <vector>
+#include <iterator>
 
 
 using namespace std;
@@ -25,7 +26,14 @@ class StepsRing
 public:
 
     StepsRing(size_t n) : N(n)
-    {}
+    {
+        // Заповнюємо коло
+        ring.resize(n);
+        for (size_t i = 0; i < n; ++i)
+        {
+            ring[i] = i + 1;
+        }
+    }
 
     void append(int value)
     {
@@ -33,15 +41,53 @@ public:
     }
 
     void lets_go()
-    {}
+    {
+        while (!ring.empty())
+        {
+            for (int step : steps)
+            {
+                auto it = begin(ring);
+
+                // -1 тому що ітератор вже вказує на елемент
+                int first_step = step - 1;
+
+                // Якщо приходится робити більш кроків ниж є у колі
+                if (first_step > ring.size())
+                {
+                    first_step = first_step % ring.size();
+                }
+
+                advance(it, first_step);
+
+                while (it < end(ring))
+                {
+                    del_order.push_back(*it);
+                    it = ring.erase(it);
+                    // елемент видалено, тому -1 з кроку
+                    advance(it, step - 1);
+                }
+
+                if (ring.empty())
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    const vector<int> &removal_order()
+    {
+        return del_order;
+    }
 
 private:
     // Це коло
     size_t N;
+    vector<int> ring;
 
     // Це кроки
     vector<int> steps;
-    size_t noga_pos{};
+
     // Порядок видалення
     vector<int> del_order;
 };
@@ -55,4 +101,11 @@ int main()
     kk.append(5);
 
     kk.lets_go();
+
+    for (int n : kk.removal_order())
+    {
+        cout << n << " ";
+    }
+
+    cout << "\n";
 }
