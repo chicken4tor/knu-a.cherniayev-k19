@@ -24,6 +24,9 @@ class StepsRing
 {
 public:
 
+    StepsRing(size_t n) : N(n)
+    {}
+
     void append(int value)
     {
         steps.push_back(value);
@@ -33,13 +36,19 @@ public:
     {}
 
 private:
+    // Це коло
+    size_t N;
+
+    // Це кроки
     vector<int> steps;
     size_t noga_pos{};
+    // Порядок видалення
+    vector<int> del_order;
 };
 
 int main()
 {
-    StepsRing kk;
+    StepsRing kk(10);
 
     kk.append(2);
     kk.append(3);
