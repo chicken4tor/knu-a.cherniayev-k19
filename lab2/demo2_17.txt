@@ -1,0 +1,5 @@
+create 10 2 3 5
+go
+steps
+step 0
+step 2

@@ -1,0 +1,15 @@
+create 10
+log 1 hohoho
+log 2 hohoho
+log 3 hohoho
+log 4 hohoho
+log 5 hohoho
+log 6 hohoho
+log 7 hohoho
+log 8 hohoho
+log 9 hohoho
+log 10 hohoho
+log 11 hohoho
+log 12 hohoho
+log 13 hohoho
+tail 4

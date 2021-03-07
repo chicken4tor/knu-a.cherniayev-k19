@@ -520,6 +520,7 @@ void test_list(IDateList *p)
         std::cerr << e.what() << '\n';
     }
 }
+
 void print_list(IDateList *p)
 {
     if (p != nullptr)
