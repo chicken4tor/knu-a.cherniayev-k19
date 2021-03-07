@@ -11,4 +11,39 @@
 // (тобто якщо задано крок 0 – яке число видалиться останнім,
 // якщо задано 1 – яке видалиться передостаннім і т.д.)
 
-int main(){}
+
+#include <iostream>
+#include <vector>
+
+
+using namespace std;
+
+
+// Знову, щось подібне до ArrayDateList
+class StepsRing
+{
+public:
+
+    void append(int value)
+    {
+        steps.push_back(value);
+    }
+
+    void lets_go()
+    {}
+
+private:
+    vector<int> steps;
+    size_t noga_pos{};
+};
+
+int main()
+{
+    StepsRing kk;
+
+    kk.append(2);
+    kk.append(3);
+    kk.append(5);
+
+    kk.lets_go();
+}
