@@ -51,29 +51,34 @@ public:
 
     void lets_go()
     {
+        auto it = begin(ring);
+
         while (!ring.empty())
         {
             for (int step : steps)
             {
-                auto it = begin(ring);
-
                 // -1 тому що ітератор вже вказує на елемент
-                int first_step = step - 1;
+                int first_step = (step - 1) % ring.size();
+
+                ptrdiff_t dist = distance(it, end(ring));
 
                 // Якщо приходится робити більш кроків ниж є у колі
-                if (first_step > ring.size())
+                if (first_step >= dist)
                 {
-                    first_step = first_step % ring.size();
+                    // Перескакуємо через хвіст
+                    it = begin(ring);
+                    first_step -= dist;
                 }
 
                 advance(it, first_step);
 
-                while (it < end(ring))
+                del_order.push_back(*it);
+                it = ring.erase(it);
+
+                if (it == end(ring))
                 {
-                    del_order.push_back(*it);
-                    it = ring.erase(it);
-                    // елемент видалено, тому -1 з кроку
-                    advance(it, step - 1);
+                    // Перескакуємо через хвіст
+                    it = begin(ring);
                 }
 
                 if (ring.empty())
