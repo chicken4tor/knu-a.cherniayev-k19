@@ -413,7 +413,7 @@ public:
                 povidom.adresat = fields[2];
                 povidom.message_type = static_cast<MessageType>(stoi(fields[3]));
                 povidom.spam = stof(fields[4]);
-                povidom.timestamp = povidom_time(chrono::milliseconds(stol(fields[5])));
+                povidom.timestamp = povidom_time(chrono::milliseconds(stoll(fields[5])));
                 povidom.povidom = fields[6];
 
                 messages.push_back(povidom);
@@ -985,7 +985,7 @@ public:
                 cout << "Потрібно вказаті початкову кількість елементів" << endl;
             }
         }
-        else if (verb == "quit")
+        else if (verb == "quit" || verb == "die")
         {
             return false;
         }
@@ -1013,7 +1013,11 @@ public:
         }
         else
         {
-            cout << "Невідома команда (скористуйтеся help) " << command << endl;
+            // Якщо нема команди - нічого не печатаємо
+            if (!verb.empty())
+            {
+                cout << "Невідома команда (скористуйтеся help) " << command << endl;
+            }
         }
 
         return true;
@@ -1069,8 +1073,8 @@ public:
 
         const char alphabet[] = "0123456789QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!+;:)(_";
 
-        string adresat[n];
-        string povidom[n];
+        vector<string> adresat(n);
+        vector<string> povidom(n);
 
         // Випадкова довжина ніку адресату
         uniform_int_distribution<string::size_type> adresat_len(6, 15);
@@ -1141,7 +1145,7 @@ public:
             {
                 auto bench_start = std::chrono::steady_clock::now();
 
-                (this->*bi.mem_fun)(iterations, n, povidom, adresat);
+                (this->*bi.mem_fun)(iterations, n, povidom.data(), adresat.data());
 
                 auto bench_end = std::chrono::steady_clock::now();
 
