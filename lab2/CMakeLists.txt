@@ -10,3 +10,5 @@ add_executable(lab2a lab2a.cpp)
 add_executable(lab2b16 lab2b16.cpp)
 
 add_executable(lab2b17 lab2b17.cpp)
+
+add_executable(lab2b29 lab2b29.cpp)

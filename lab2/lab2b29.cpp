@@ -43,8 +43,8 @@ void report_error()
     <program>     --> (<statement> ';')*
     <statement>   --> <assignment> | <expression>
     <assignement> --> ID '=' <expression>
-    <expression>  --> <term> ( ('+'|'-') <term> )*
-    <term>        --> <factor> ( ('*'|'/'|'%') <factor> )*
+    <expression>  --> <term> ( <term> ('+'|'-') )*
+    <term>        --> <factor> ( <factor> ('*'|'/'|'%') )*
     <factor>      --> ('+'|'-')* ID | NUMBER | '(' <expression> ')'
  */
 
@@ -59,8 +59,8 @@ enum TokenType
     MULTIPLY,  // *
     DIVIDE,    // /
     MODULE,    // %
-    RPAREN,    // )
-    LPAREN,    // (
+    // RPAREN,    // )
+    // LPAREN,    // (
     ASSIGN,    // =
     SEMICOLON, // ;
     ID,        // "Variable" name
@@ -255,14 +255,14 @@ void lexus(const string &expr)
                 token.type = MODULE;
                 tokens.push_back(token);
                 break;
-            case '(':
-                token.type = LPAREN;
-                tokens.push_back(token);
-                break;
-            case ')':
-                token.type = RPAREN;
-                tokens.push_back(token);
-                break;
+            // case '(':
+            //     token.type = LPAREN;
+            //     tokens.push_back(token);
+            //     break;
+            // case ')':
+            //     token.type = RPAREN;
+            //     tokens.push_back(token);
+            //     break;
             case '=':
                 token.type = ASSIGN;
                 tokens.push_back(token);
@@ -358,11 +358,17 @@ void statement()
 void expression()
 {
     term();
+
+    while (lookahead.type == NUMBER || lookahead.type == ID)
+    {
+        term();
+    }
+
     while (lookahead.type == PLUS || lookahead.type == MINUS)
     {
         auto tt = lookahead.type;
         match(lookahead.type);
-        term();
+
         cout << TokenString(tt) << '\n';
 
         if (tt == PLUS)
@@ -389,11 +395,16 @@ void expression()
 void term()
 {
     factor();
+
+    while (lookahead.type == NUMBER || lookahead.type == ID)
+    {
+        factor();
+    }
+
     while (lookahead.type == MULTIPLY || lookahead.type == DIVIDE || lookahead.type == MODULE)
     {
         auto tt = lookahead.type;
         match(lookahead.type);
-        factor();
 
         cout << TokenString(tt) << '\n';
 
@@ -431,23 +442,23 @@ void factor()
 {
     switch (lookahead.type)
     {
-    case PLUS:
-        {
-            match(PLUS);
-            factor();
-            cout << "  --> " << values_stack.back() << "\n";
-        }
-        break;
-    case MINUS:
-        {
-            match(MINUS);
-            factor();
-            long arg = values_stack.back();
-            values_stack.pop_back();
-            values_stack.push_back(-arg);
-            cout << "  --> " << values_stack.back() << "\n";
-        }
-        break;
+    // case PLUS:
+    //     {
+    //         match(PLUS);
+    //         factor();
+    //         cout << "  --> " << values_stack.back() << "\n";
+    //     }
+    //     break;
+    // case MINUS:
+    //     {
+    //         match(MINUS);
+    //         factor();
+    //         long arg = values_stack.back();
+    //         values_stack.pop_back();
+    //         values_stack.push_back(-arg);
+    //         cout << "  --> " << values_stack.back() << "\n";
+    //     }
+    //     break;
     case NUMBER:
         {
             auto value = lookahead.value;
@@ -456,19 +467,19 @@ void factor()
             cout << value << '\n';
         }
         break;
-    case LPAREN:
-        match(LPAREN);
-        expression();
-        match(RPAREN);
-        break;
-    case ID:
-        {
-            auto name = lookahead.name;
-            match(ID);
-            values_stack.push_back(variables[name]);
-            cout << "  " << name << " --> " << values_stack.back() << "\n";
-        }
-        break;
+    // case LPAREN:
+    //     match(LPAREN);
+    //     expression();
+    //     match(RPAREN);
+    //     break;
+    // case ID:
+    //     {
+    //         auto name = lookahead.name;
+    //         match(ID);
+    //         values_stack.push_back(variables[name]);
+    //         cout << "  " << name << " --> " << values_stack.back() << "\n";
+    //     }
+    //     break;
     default:
         report_error();
     }
