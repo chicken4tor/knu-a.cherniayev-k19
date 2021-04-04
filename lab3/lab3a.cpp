@@ -26,8 +26,68 @@
 // не більше 10 елементів).
 
 #include <iostream>
+#include <string>
+#include <utility>
+
 
 using namespace std;
 
+
+// Порівняння рядків
+bool compare_greater(const string &s1, const string &s2)
+{
+    if (s1.length() == s2.length())
+    {
+        return s1 > s2;
+    }
+
+    if (s1.length() < s2.length())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// Insertion sort
+void insertion_sort(string *first, string *last)
+{
+    int len = last - first;
+
+    for (int i = 1; i < len; ++i)
+    {
+        for( int j = i; j > 0 && compare_greater(first[j-1], first[j]); --j)
+        {
+            swap(first[j-1], first[j]);
+        }
+    }
+}
+
+// Quick sort. Hoare partition scheme, rightmost pivot
+
+// Merge sort. Top-down, small lists
+
 int main()
-{}
+{
+    string a1[] = { "AA", "B", "A", "AB"};
+
+    insertion_sort(begin(a1), end(a1));
+
+    bool sep = false;
+
+    for (auto& s : a1)
+    {
+        if (sep)
+        {
+            cout << ", ";
+        }
+
+        cout << s;
+
+        sep = true;
+    }
+
+    cout << "\n";
+
+    return 0;
+}
