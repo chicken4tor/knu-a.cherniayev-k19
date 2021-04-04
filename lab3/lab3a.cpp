@@ -49,6 +49,11 @@ bool compare_greater(const string &s1, const string &s2)
     return true;
 }
 
+bool compare_lesser(const string &s1, const string &s2)
+{
+    return !compare_greater(s1, s2) && s1 != s2;
+}
+
 // Insertion sort
 void insertion_sort(string *first, string *last)
 {
@@ -65,13 +70,57 @@ void insertion_sort(string *first, string *last)
 
 // Quick sort. Hoare partition scheme, rightmost pivot
 
+int hoare_partition(string *A, int lo, int hi)
+{
+    int p_i = (lo + hi)/2;  // Middle index, temporarly
+    const string &pivot = A[p_i];
+
+    for (int i = lo - 1, j = hi + 1;;)
+    {
+        do
+        {
+            ++i;
+        } while (compare_lesser(A[i], pivot));
+
+        do
+        {
+            --j;
+        } while (compare_greater(A[j], pivot));
+
+        if (i >= j)
+        {
+            return j;
+        }
+
+        swap(A[i], A[j]);
+    }
+
+    return -1;
+}
+
+void quicksort(string *A, int lo, int hi)
+{
+    if (lo < hi)
+    {
+        int p = hoare_partition(A, lo, hi);
+        quicksort(A, lo, p);
+        quicksort(A, p + 1, hi);
+    }
+}
+
+void quick_sort(string *first, string *last)
+{
+    quicksort(first, 0, last - first - 1);
+}
+
 // Merge sort. Top-down, small lists
 
 int main()
 {
     string a1[] = { "AA", "B", "A", "AB"};
 
-    insertion_sort(begin(a1), end(a1));
+    //insertion_sort(begin(a1), end(a1));
+    quick_sort(begin(a1), end(a1));
 
     bool sep = false;
 
