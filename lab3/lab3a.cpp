@@ -28,6 +28,8 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include <vector>
+#include <algorithm>
 
 
 using namespace std;
@@ -115,12 +117,72 @@ void quick_sort(string *first, string *last)
 
 // Merge sort. Top-down, small lists
 
+typedef vector<string> mrg_list;
+
+mrg_list merge(mrg_list &left, mrg_list &right)
+{
+    mrg_list result;
+
+    while (!left.empty() && !right.empty())
+    {
+        if (compare_greater(left.front(), right.front()))
+        {
+            result.push_back(right.front());
+            right.erase(right.begin());
+        }
+        else
+        {
+            result.push_back(left.front());
+            left.erase(left.begin());
+        }
+    }
+
+    result.insert(end(result), begin(left), end(left));
+    result.insert(end(result), begin(right), end(right));
+
+    return result;
+}
+
+mrg_list mergesort(mrg_list &m)
+{
+    // Якщо у списку один елемент - він відсортован
+    if (m.size() <= 1)
+    {
+        return m;
+    }
+
+    // Розділимо на два рівних підсписка
+    int mid = m.size() / 2;
+
+    mrg_list left(begin(m), begin(m) + mid);
+    mrg_list right(begin(m) + mid, end(m));
+
+    left = mergesort(left);
+    right = mergesort(right);
+
+    return merge(left, right);
+}
+
+void merge_sort(string *first, string *last)
+{
+    mrg_list m;
+
+    m.reserve(last - first);
+
+    m.insert(end(m), first, last);
+
+    m = mergesort(m);
+
+    copy(begin(m), end(m), first);
+}
+
 int main()
 {
-    string a1[] = { "AA", "B", "A", "AB"};
+    string a1[] = { "AA", "B", "A", "AB", "X", "SSS", "Nnn", "a", "AAAA", "NNN"};
 
     //insertion_sort(begin(a1), end(a1));
-    quick_sort(begin(a1), end(a1));
+    //quick_sort(begin(a1), end(a1));
+    merge_sort(begin(a1), end(a1));
 
     bool sep = false;
 
