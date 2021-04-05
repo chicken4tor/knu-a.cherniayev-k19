@@ -12,5 +12,10 @@
 		{
 			"path": "lab4"
 		}
-	]
+	],
+	"settings": {
+		"files.associations": {
+			"initializer_list": "cpp"
+		}
+	}
 }
