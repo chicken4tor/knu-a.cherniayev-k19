@@ -13,10 +13,16 @@ send question tima Bite my shiny metal ass!!!
 login neo
 send news avakov Chort!
 send news avakov Chort!!
+login zeo
+send news biden Final countdown
 send news avakov Chort!!!
 send news avakov Chort!!!!
+login ceo
+send news trump Ho-ho-ho
 send news avakov Chort!!!!!
+login teo
 send news avakov Chort!!!!!!
+send news bill Must die
 search_pov Chort
 # Покажемо перше, та четверте знайдене повідомлення
 show _ ____
@@ -38,4 +44,13 @@ update message Lorem ipsum
 # Завершуємо режим редагування
 edit
 show
+# Сортуемо повідомлення
+search_ocin news 0
+order adresat, avtor
+# Покажемо вибрані поля
+order
+# Отсортовано
+show
+# Убираємо сортування
+order reset
 #  quit

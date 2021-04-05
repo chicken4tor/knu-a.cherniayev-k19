@@ -54,6 +54,7 @@
 #include <sstream>
 #include <random>
 #include <sys/stat.h>
+#include <cctype>
 
 #include "povidom.h"
 
@@ -86,6 +87,76 @@ MessageType from_str(const string &str)
     }
 
     return result;
+}
+
+int order_field_id(const string &field_name)
+{
+    int field_id = -1;
+
+    if (field_name == "id")
+    {
+        field_id = 0;
+    }
+    else if (field_name == "povidom")
+    {
+        field_id = 1;
+    }
+    else if (field_name == "avtor")
+    {
+        field_id = 2;
+    }
+    else if (field_name == "adresat")
+    {
+        field_id = 3;
+    }
+    else if (field_name == "spam")
+    {
+        field_id = 4;
+    }
+    else if (field_name == "timestamp")
+    {
+        field_id = 5;
+    }
+    else if (field_name == "message_type")
+    {
+        field_id = 6;
+    }
+
+    return field_id;
+}
+
+string order_field_name(int id)
+{
+    string field_name;
+
+    switch (id)
+    {
+    case 0:
+        field_name = "id";
+        break;
+    case 1:
+        field_name = "povidom";
+        break;
+    case 2:
+        field_name = "avtor";
+        break;
+    case 3:
+        field_name = "adresat";
+        break;
+    case 4:
+        field_name = "spam";
+        break;
+    case 5:
+        field_name = "timestamp";
+        break;
+    case 6:
+        field_name = "message_type";
+        break;
+    default:
+        break;
+    }
+
+    return field_name;
 }
 
 // спеціальний адресат, що позначає повідомлення для всіх
@@ -519,6 +590,9 @@ class ServerDemo
     // Результат пошуку
     vector<povidom_id> results;
 
+    // Порядок сортування
+    vector<int> sort_order;
+
     povidom_id id_from_str(const string &id_str)
     {
         int special_id = -1;
@@ -779,8 +853,80 @@ public:
 
             if (args.empty())
             {
+                vector<povidom_id> sorted(results);
+
+                if (!sort_order.empty())
+                {
+                    sort(begin(sorted), end(sorted), [this](povidom_id a, povidom_id b) {
+                        const Povidom &p_a = s1.get_pov(a);
+                        const Povidom &p_b = s1.get_pov(b);
+
+                        bool is_less = false;
+
+                        for (int id : sort_order)
+                        {
+                            switch (id)
+                            {
+                            case 0:
+                                if (p_a.id == p_b.id)
+                                {
+                                    continue;
+                                }
+                                is_less = p_a.id < p_b.id;
+                                break;
+                            case 1:
+                                if (p_a.povidom == p_b.povidom)
+                                {
+                                    continue;
+                                }
+                                is_less = p_a.povidom < p_b.povidom;
+                                break;
+                            case 2:
+                                if (p_a.avtor == p_b.avtor)
+                                {
+                                    continue;
+                                }
+                                is_less = p_a.avtor < p_b.avtor;
+                                break;
+                            case 3:
+                                if (p_a.adresat == p_b.adresat)
+                                {
+                                    continue;
+                                }
+                                is_less = p_a.adresat < p_b.adresat;
+                                break;
+                            case 4:
+                                if (p_a.spam == p_b.spam)
+                                {
+                                    continue;
+                                }
+                                is_less = p_a.spam < p_b.spam;
+                                break;
+                            case 5:
+                                if (p_a.timestamp == p_b.timestamp)
+                                {
+                                    continue;
+                                }
+                                is_less = p_a.timestamp < p_b.timestamp;
+                                break;
+                            case 6:
+                                if (p_a.message_type == p_b.message_type)
+                                {
+                                    continue;
+                                }
+                                is_less = p_a.message_type < p_b.message_type;
+                                break;
+                            }
+
+                            break;
+                        }
+
+                        return is_less;
+                    });
+                }
+
                 // показуємо нове повідомлення, або результати пошуку
-                for (povidom_id id : results)
+                for (povidom_id id : sorted)
                 {
                     const Povidom &povidom = s1.get_pov(id);
                     s1.show_pov(povidom);
@@ -911,7 +1057,7 @@ public:
                         // Знайдемо початок повідомлення
                         ss.clear();  // Убираємо признак кінця файлу
                         ss.seekg(0, ios_base::beg);  // На початок стріму
-                        ss >> arg >> ws;  // Ігноруємо команду
+                        ss >> arg >> arg >> ws;  // Ігноруємо команду
                         getline(ss, arg);
 
                         up.povidom = arg;
@@ -939,6 +1085,74 @@ public:
             {
                 up_id = 0;
                 cout << "Редагування завершено" << endl;
+            }
+        }
+        else if (verb == "order")
+        {
+            if (args.size() > 0)
+            {
+                sort_order.clear();
+
+                // Допустимо використання коми як роздільника
+                for (string field : args)
+                {
+                    if (field == ",")
+                    {
+                        continue;
+                    }
+
+                    while (!field.empty() && (field.front() == ',' || isspace(static_cast<unsigned char>(field.front()))))
+                    {
+                        field.erase(begin(field));
+                    }
+
+                    while(!field.empty() && (field.back() == ',' ||  isspace(static_cast<unsigned char>(field.back()))))
+                    {
+                        field.pop_back();
+                    }
+
+                    if (field == "reset")
+                    {
+                        sort_order.clear();
+                        break;
+                    }
+
+                    int id = order_field_id(field);
+
+                    if (id != -1)
+                    {
+                        // Не будемо добавляти дуплікати
+                        if (find(begin(sort_order), end(sort_order), id) == end(sort_order))
+                        {
+                            sort_order.push_back(id);
+                        }
+                    }
+                    else
+                    {
+                        cout << "Невідоме поле - " << field << endl;
+                    }
+                }
+            }
+            else
+            {
+                bool sep = false;
+
+                for (int i : sort_order)
+                {
+                    if (sep)
+                    {
+                        cout << ", ";
+                    }
+
+                    cout << order_field_name(i);
+
+                    sep = true;
+                }
+
+                if (sep)
+                {
+                    cout << endl;
+                }
             }
         }
         else if (verb == "benchmark")
@@ -979,6 +1193,7 @@ public:
                     "Редагування - edit <id повідомлення>\n"
                     "Оновлення данних - update <type або spam або message> <нове значення>\n"
                     "Видалити - delete <id повідомлення>\n"
+                    "Сортуваня повідомлень (можна вибрати декілька полів) - order [id, povidom, avtor, adresat, spam, timestamp, message_type] або reset\n"
                     "Всі повідомлення - dump\n"
                     "Демонстрацийний режим - demo <ім'я файла з командами>\n"
                     "Режим вимірювання ефективності - benchmark <кількість елементів>\n"
