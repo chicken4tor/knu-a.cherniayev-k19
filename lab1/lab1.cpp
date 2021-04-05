@@ -55,12 +55,10 @@
 #include <random>
 #include <sys/stat.h>
 
+#include "povidom.h"
+
 
 using namespace std;
-
-enum MessageType {
-    Unknown, News, Question, Answer, Invite, Comment, 
-};
 
 MessageType from_str(const string &str)
 {
@@ -100,33 +98,9 @@ const std::string DATA_BINARY = "data_bin";
 // Роздільник для текстового формату
 const char FIELD_DELIM = '\t';
 
-typedef unsigned long long povidom_id;
-typedef chrono::time_point<chrono::system_clock> povidom_time;
-
 // Дата у форматі - 2003-10-19T04:45:34
 // https://en.wikipedia.org/wiki/ISO_8601
 povidom_time parse_date(const string &date);
-
-
-struct Povidom
-{
-    // ціле число, яке буде унікальним для кожного елементу даних
-    povidom_id id{};
-    // текст повідомлення
-    string povidom;
-    // користувач-автор повідомлення
-    string avtor;
-    // адресат повідомлення
-    string adresat;
-    // оцінка повідомлення від системи боротьби зі спамом
-    float spam{};
-    // точна дата і час відправлення повідомлення
-    povidom_time timestamp;
-    // тип повідомлення
-    MessageType message_type{};
-    // відповідь на
-    povidom_id reply_to{};
-};
 
 struct Server
 {

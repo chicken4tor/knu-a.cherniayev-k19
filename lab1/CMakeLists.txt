@@ -1,4 +1,5 @@
-project(Lab1)
+cmake_minimum_required(VERSION 3.0.0)
+project(Lab1 VERSION 0.1.0)
 
 # Піздніше спробуемо скомпілювате це у Віндовс
 set(CMAKE_CXX_STANDARD 11)
