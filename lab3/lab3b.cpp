@@ -45,9 +45,21 @@ void countingsort(counting_data *A, counting_data *B, int len, int k)
 
 void counting_sort(counting_data *first, counting_data *last)
 {
-    vector<counting_data> output(last - first);
+    int len = last - first;
+    vector<counting_data> output(len);
 
-    countingsort(first, &output[0], last - first, 3);
+    int k = 0;
+
+    // Знайдемо наїбільше k
+    for (int i = 0; i < len; ++i)
+    {
+        if (k < first[i].key)
+        {
+            k = first[i].key;
+        }
+    }
+
+    countingsort(first, &output[0], len, k);
 
     copy(begin(output), end(output), first);
 }
@@ -62,7 +74,7 @@ void radix_sort(string *first, string *last)
 
 int main()
 {
-    counting_data a1[] = {{0, "a"}, {3, "d"}, {2, "c"}, {1, "b"}};
+    counting_data a1[] = {{1, "b"}, {3, "d"}, {2, "c"}, {0, "a"}, };
 
     counting_sort(begin(a1), end(a1));
 
