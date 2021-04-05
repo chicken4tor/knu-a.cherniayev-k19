@@ -18,7 +18,8 @@
 			"initializer_list": "cpp",
 			"chrono": "cpp",
 			"*.tcc": "cpp",
-			"streambuf": "cpp"
+			"streambuf": "cpp",
+			"iosfwd": "cpp"
 		}
 	}
 }
