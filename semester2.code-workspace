@@ -19,7 +19,8 @@
 			"chrono": "cpp",
 			"*.tcc": "cpp",
 			"streambuf": "cpp",
-			"iosfwd": "cpp"
+			"iosfwd": "cpp",
+			"iomanip": "cpp"
 		}
 	}
 }
