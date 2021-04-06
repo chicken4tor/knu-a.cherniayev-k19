@@ -385,7 +385,7 @@ ExpressionNode *eval_env(ExpressionNode *node, environment &vars)
         ev_left->data.value = vars[ev_left->data.name];
     }
 
-    if (ev_left != nullptr && ev_right->data.type == ID)
+    if (ev_right != nullptr && ev_right->data.type == ID)
     {
         ev_right->data.type = NUMBER;
         ev_right->data.value = vars[ev_right->data.name];
